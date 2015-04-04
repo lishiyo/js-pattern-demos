@@ -82,6 +82,20 @@
         { label: "Canada", data: 20 }
     ];
 
+	var _showChart = function(){
+        $.plot(this.$el, this.data, {
+                series: {
+                    pie: {
+                        show: true
+                    }
+                },
+                grid: {
+                    hoverable: true,
+                    clickable: true
+                }
+            });
+	};
+
     // event handling
     var _getPercent = function(percent){
     	return parseFloat(percent).toFixed(2);
@@ -101,21 +115,6 @@
             alert('' + obj.series.label + ': ' + percent + '%');
         }
     };
-
-	var _showChart = function(){
-		// ** option hash idiom
-        $.plot(this.$el, this.data, {
-                series: {
-                    pie: {
-                        show: true
-                    }
-                },
-                grid: {
-                    hoverable: true,
-                    clickable: true
-                }
-            });
-	};
 
 	var _setUpListeners = function(){
         // ** chaining pattern
@@ -150,11 +149,63 @@
 
 	var RealTime = function(opts) {
 		this.$el = opts.$el;
+		this.data = opts.data || [];
+		this.plot = opts.plot || null;
 	};
 
+	// returns coords array plus new x,y
+	var getData = function (data) {
+		if (data.length > 0) data = data.slice(1);
+        while (data.length < 300) {
+            var prev = data.length > 0 ? data[data.length - 1] : 50;
+            var y = Math.round(prev + Math.random() * 5 - 2.5);
+            y = Math.max(Math.min(y, 100), 0); // range is 0 - 100;
+            data.push(y);
+        }
+        
+		function _getCoords () {
+			var coords = [];
+	        for (var x = 0; x < data.length; ++x) {
+	            coords.push([x, data[x]])
+	        }
+	        return coords;
+	    };
+
+        return _getCoords();
+	};
+
+    var renderPlot = function (data) {
+        var options = {
+            series: { shadowSize: 0 },
+            yaxis: { min: 0, max: 100 },
+            xaxis: { show: false },
+            colors: ["#cc0000"]
+        };
+
+        return $.plot(this.$el, [getData(data)], options);
+    };
+
+	var initRender = function (callback) {
+        this.data = getData([]);
+        this.plot = renderPlot.call(this, this.data);
+        callback.call(this, this.plot);
+    };
+
+    RealTime.prototype.updateRender = function(plot){
+    	console.log("updateRender", plot);
+        var updateRealtime = function() {
+            plot.setData([getData(this.data)]);
+            plot.draw();   // call draw because axis did not change
+            setTimeout(updateRealtime.bind(this), 30);
+        }.bind(this);
+
+        updateRealtime();
+    };
+
 	RealTime.prototype.start = function(){
-		console.log("RealTime starting")
-	}
+		console.log("RealTime starting");
+		initRender.call(this, this.updateRender);
+	};
 
 	module.exports = RealTime;
 
@@ -232,7 +283,7 @@ $(function(){
 // 	});
 // 	dash.run();
 // });
-}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_37a3949b.js","/")
+}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_6ad351ae.js","/")
 },{"./01-summary.js":1,"./02-demographics.js":2,"./03-realtime.js":3,"1YiZ5S":8,"buffer":5}],5:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 /*!

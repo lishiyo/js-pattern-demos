@@ -12,6 +12,20 @@
         { label: "Canada", data: 20 }
     ];
 
+	var _showChart = function(){
+        $.plot(this.$el, this.data, {
+                series: {
+                    pie: {
+                        show: true
+                    }
+                },
+                grid: {
+                    hoverable: true,
+                    clickable: true
+                }
+            });
+	};
+
     // event handling
     var _getPercent = function(percent){
     	return parseFloat(percent).toFixed(2);
@@ -31,21 +45,6 @@
             alert('' + obj.series.label + ': ' + percent + '%');
         }
     };
-
-	var _showChart = function(){
-		// ** option hash idiom
-        $.plot(this.$el, this.data, {
-                series: {
-                    pie: {
-                        show: true
-                    }
-                },
-                grid: {
-                    hoverable: true,
-                    clickable: true
-                }
-            });
-	};
 
 	var _setUpListeners = function(){
         // ** chaining pattern
