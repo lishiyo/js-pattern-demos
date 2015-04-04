@@ -10,6 +10,7 @@
 	};
 
 	// returns coords array plus new x,y
+	// test
 	var getData = function (data) {
 		if (data.length > 0) data = data.slice(1);
         while (data.length < 300) {
